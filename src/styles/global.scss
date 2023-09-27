@@ -1,0 +1,30 @@
+/* src/css/global.css */
+
+@import "kucss/src/index.css";
+
+summary {
+  display: flex;
+}
+
+:root {
+  --sl-text-h1: var(--sl-text-3xl);
+  --sl-text-h2: var(--sl-text-2xl);
+  --sl-text-h3: var(--sl-text-xl);
+  --sl-text-h4: var(--sl-text-base);
+}
+
+body {
+  font-size: var(--sl-font-size-base);
+  color: initial;
+}
+
+.content-panel {
+  ul li {
+    list-style-type: disc;
+    margin-left: 20px;
+  }
+
+  code {
+    font-size: var(--sl-font-size-base);
+  }
+}

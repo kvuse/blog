@@ -1,0 +1,257 @@
+---
+title: 自动配置路由
+---
+
+:::tip[你是否也有这样的烦恼？]
+
+- 项目过程中，你是否每加一个页面，都要添加路由的的烦恼?  
+- 你是否想每加一个`.vue`文件，自动生成路由文件呢？
+:::
+
+下面这个插件，就可以解决你的这些烦恼。
+
+## 安装
+
+```js
+#Npm
+npm i -D unplugin-vue-router
+
+# Pnpm
+pnpm i -D unplugin-vue-router
+```
+
+## 使用
+
+### vite.config.js
+
+```js
+// vite.config.ts
+import VueRouter from 'unplugin-vue-router/vite'
+
+export default defineConfig({
+  plugins: [
+    VueRouter({
+      routesFolder: 'src/views',
+      exclude: ['**/components/*.vue'],
+      extensions: ['.vue'],
+    }),
+    // ⚠️ 必须要放到Vue()之前
+    Vue(),
+  ],
+})
+```
+
+### `src/views/index.ts`
+
+把`vue-router`替换为`vue-router/auto`
+
+```js
+// src/router/index.js
+import { createRouter, createWebHashHistory } from 'vue-router/auto';
+
+const router = createRouter({
+  history: createWebHashHistory(import.meta.env.BASE_URL),
+});
+
+export default router;
+
+```
+
+## 配置
+
+```js
+VueRouter({
+  // 自动生成路由的文件夹
+  routesFolder: 'src/pages',
+
+  // 生成路由的扩展名
+  extensions: ['.vue'],
+
+  // 要从路线生成中排除的文件列表
+  // 例如['**/__*']将排除以'__'开头的所有文件和文件夹
+  //例如['**/__*/**/*']将排除以'__'开头的文件夹中的所有文件
+  //例如['**/*。component.vue']将排除以`.component.vue`的结尾的组件
+  exclude: [],
+
+  // 生成类型的路径
+  // 可以通过设置 false 来禁用.
+  dts: './typed-router.d.ts',
+
+  // 自定义 <route> 模块
+  routeBlockLang: 'json5',
+
+  // 更改页面组件的导入方式，可以是“异步”、“同步”或函数:
+  // (filepath: string) => 'async' | 'sync'
+  importMode: 'async',
+})
+```
+
+## 文件夹结构
+
+```md
+src/views/
+├── index.vue
+├── about.vue
+└── users.vue
+```
+
+这将生成以下路由：
+
+- `/`：->渲染`index.vue`组件
+- `/about`：->渲染`about.vue`组件
+- `/users`：->渲染`users.vue`组件
+
+![image.png](/images/plugins/basic.png)
+
+### 索引路线
+
+任何`index.vue`文件将生成一个空路径（类似于`index.html`文件）：
+
+- `src/views/index.vue`：生成`/`路由
+- `src/views/collect/index.vue`：生成`/collect`路由
+
+### 嵌套路由
+
+```md
+src/views/
+├── users/
+│   └── index.vue
+│   └── edit.vue
+│   └── [id].vue
+```
+
+![image.png](/images/plugins/nest.png)
+
+- `/users/index`：->渲染`users/index.vue`组件
+- `/users/edit`：->渲染`users/edit.vue`组件
+- `/users/:id`：->渲染`users/[id].vue`组件,`id`成为路由参数。
+
+**如果你不想嵌套，并且生成users开头路由，可以在users统计添加`users.create.vue`组件**
+
+```md
+src/views/
+├── users/
+│   └── index.vue
+│   └── edit.vue
+│   └── [id].vue
+├── users.create.vue
+```
+
+![image.png](/images/plugins/level.webp)
+
+### 动态路由
+
+```md
+src/views/
+├── users/
+│   └── [id].vue
+│   └── [[id]].vue
+│   └── details_[id].vue[
+│   └── [classes]+.vue
+```
+
+-`/users/:id`：->渲染`users/[id].vue`组件,`id`成为路由`params: { id: 11 }`参数。
+-`/users?id`：->渲染`users/[[id]].vue`组件,`?id=11`成为路由`query: { id: 11 }`参数, 例如：`/users?id=11
+-`/users/details_:id`：->渲染`users/details_[id].vue`组件,例如：`users/details_11
+-`/users/[classes]+`：->渲染`users/[classes]+.vue`组件, 来创建[可重复的参数](https://router.vuejs.org/guide/essentials/route-matching-syntax.html#repeatable-params)，可匹配：`/users/v1/a`, `/users/v2/b/c`
+
+![image.png](/images/plugins/dynamics.webp)
+
+### 命名视图
+
+可以通过在文件名后附加一个`@` + a名称来定义[vueRouter组合布局](https://juejin.cn/post/7230703361179484220)
+
+```md
+src/views/
+├── about/
+│   └── details.vue
+│   └── details@aLeft.vue
+```
+
+![image.png](/images/plugins/name.webp)
+
+### 路由扩展
+
+ 1. `definePage()`
+  
+`definePage()`允许您定义与路由相关的任何额外属性。当您需要自定义`path`、`name`、`meta`
+
+```js
+  <script setup>
+    definePage({
+      name: 'my-collect',
+      path: '/collect_:param',
+      alias: ['/collect/:param'],
+      meta: {
+        title: '前台',
+      },
+      props: true,
+    });
+  </script>
+```
+
+![image.png](/images/plugins/extend.webp)
+
+2.`<route>`
+  
+`<route>`自定义块是扩展现有路由
+
+```html
+       <template>
+          <div>Collect</div>
+        </template>
+
+        <route lang="json">
+          {
+            "name": "my-collect",
+            "path": "/collect/:param",
+            "meta": {
+              "title": "前台"
+            },
+            "props": true
+          }
+        </route>
+
+        <script setup></script>
+
+        <style lang="scss" scoped></style>
+
+ ```
+
+3.`extendRoutes()`
+
+您可以通过将`extendRoutes`函数传递给`createRouter()`来扩展现有路由
+
+```js
+    // src/router/index.js
+    import { createRouter, createWebHashHistory } from 'vue-router/auto';
+
+    const router = createRouter({
+      extendRoutes: (routes) => {
+        console.log('routes: ', routes);
+        const collectRoute = routes.find((r) => r.name === '/collect');
+        if (collectRoute) {
+          collectRoute.meta ??= {};
+          collectRoute.meta.title = '前台';
+        }
+        return routes;
+      },
+      history: createWebHashHistory(import.meta.env.BASE_URL),
+    });
+
+    export default router;
+```
+
+![image.png](/images/plugins/extendRoutes.webp)
+
+#### 总结
+
+对于熟悉路由的同学，还是很快上手的，用起来还是很方便的。有个缺点就是在添加或者修改的路由的时候，可能重新跑下项目，这个不是太好，好在是测试阶段，应该会很快解决这个问题的。
+
+下载项目：**已配置好项目**
+
+```bash
+pnpm create kvuse my-project --template vite-pages
+```
+
+[项目地址](https://github.com/kvuse/create-kvuse/tree/master/templates/vite-pages)

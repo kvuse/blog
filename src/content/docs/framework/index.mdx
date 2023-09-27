@@ -1,0 +1,92 @@
+---
+title: 创建项目
+date: 2022-02-22
+sidebar:
+  order: 1
+---
+
+
+## 背景
+
+我们新建项目的时候，需要使用模板创建，一般使用vite创建项目，创建的项目都是基础的。
+
+我们需要添加`eslint`、`stylelint`,`pinia`等等。
+
+每次都要配置，还要浪费开发时间，所以我配置了通用的模板，直接通过模板下载就能使用。让你有更多的摸鱼时间😄
+
+## 准备工作
+
+>Vite 需要 [Node.js](https://nodejs.org/en/) 版本 14.18+，16+。然而，有些模板需要依赖更高的 Node 版本才能正常运行，当你的包管理器发出警告时，请注意升级你的 Node 版本。
+>
+1. 因为vite版本要求，`Node`版本要`14.18+，16+`
+2. 因为模板需要`stylelint`和`volar`格式化样式，所以我们要提前下载`vscode插件`
+
+### 下载Vscode插件
+
+- vue3语法工具  [`Vue Language Features (Volar)`](https://marketplace.visualstudio.com/items?itemName=Vue.volar)
+- 样式格式化工具   [`stylelint`](https://marketplace.visualstudio.com/items?itemName=stylelint.vscode-stylelint)
+
+## 快速创建
+
+```bash
+npm create kvuse my-project
+
+yarn create kvuse my-project
+
+pnpm create kvuse my-project
+```
+
+## 指定模板创建
+
+```bash
+npm create kvuse my-project --template vite-element
+
+yarn create kvuse my-project --template vite-element
+
+pnpm create kvuse my-project --template vite-element
+
+```
+
+## 模板支持
+
+- `vue2-element` vue@2.0 + elementUI + vuex + eslint + stylelint
+- `vite-element` vite + elementPlus + pinia + eslint + stylelint
+- `vite-pages` vite + elementPlus + pinia + unplugin-vue-router + eslint + stylelint
+- `vite-vant` vite + vant@4.0 + pinia + eslint + stylelint
+- `vite-uniapp` vite@2.0 + vue@3.2 + uniapp + pinia + eslint + stylelint
+
+## 安装依赖
+
+```bash
+cd my-project
+pnpm install
+
+// 启动项目
+pnpm dev
+```
+
+### 设置项目仓库地址
+
+下载模板后可以在项目根目录下添加`.gitignore`文件，并设置项目仓库地址
+
+```bash
+# 下载模板后，进入模板项目
+cd 项目
+
+# 初始化git
+git init 
+
+# 添加远程仓库地址
+git remote add origin https://xxx.git 
+
+```
+
+添加`.gitignore`文件, 可忽略提交内容
+
+```bash
+# 忽略node_modules
+node_modules
+# 忽略.DS_Store
+.DS_Store
+# 忽略其他
+```

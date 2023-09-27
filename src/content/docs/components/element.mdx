@@ -1,0 +1,91 @@
+---
+title: elementPlus
+description: elementPlus二次封装组件
+---
+
+## 介绍
+
+- elementPlus二次封装组件
+- 组件快速使用，避免重复开发
+
+## 安装
+
+```bash
+# Npm  
+npm install @kvuse/components
+ 
+# Yarn  
+yarn add @kvuse/components
+
+# Pnpm  
+pnpm add @kvuse/components
+```
+
+## 使用
+
+### 全局引入
+
+```js
+// main.js
+import { createApp } from 'vue';
+import { KUI } from '@kvuse/components';
+import '@kvuse/components/dist/index.css'
+
+Vue.use(KUI)
+```
+
+### 按需引入
+
+```js
+import {
+  KAutoCounter,
+  KBatchTable,
+  KBreadcrumb,
+  KButton,
+  KCardList,
+  KCollapseButton,
+  KDatePicker,
+  KDialog,
+  KInput,
+  KInputNumber,
+  KNumberKeyboard,
+  KPage,
+  KPicker,
+  KTable,
+  KTableV2,
+  KTabs,
+  KTooltip,
+  KUI,
+  KVirtualList,
+  directives
+} from '@kvuse/components';
+
+export default {
+  components: {
+    KAutoCounter,
+    KBatchTable,
+    KBreadcrumb,
+    KButton,
+    KCardList,
+    KCollapseButton,
+    KDatePicker,
+    KDialog,
+    KInput,
+    KInputNumber,
+    KNumberKeyboard,
+    KPage,
+    KPicker,
+    KTable,
+    KTableV2,
+    KTabs,
+    KTooltip,
+    KUI,
+    KVirtualList,
+    directives  
+  },
+};
+```
+
+## 文档地址
+
+[点击查看](https://kvuse.github.io/kvuse/element-plus/button)
