@@ -1,0 +1,156 @@
+---
+title: Vue DevTools（预览版）
+---
+
+## 介绍
+
+:::tip
+>vite-plugin-vue-devtools 是一个旨在增强 Vue 开发者体验的 Vite 插件。
+:::
+
+之前看到这个插件没有太在意，总觉得花里胡哨，今天体验完了，感觉还是挺好用的。
+
+## 安装
+
+首先我们安装下插件
+
+```js
+#Yarn
+yarn add vite-plugin-vue-devtools -D
+
+# Pnpm
+pnpm install vite-plugin-vue-devtools -D
+```
+
+## 使用
+
+```js
+import { defineConfig } from 'vite'
+import VueDevTools from 'vite-plugin-vue-devtools'
+
+export default defineConfig({
+  plugins: [
+    VueDevTools(),
+    vue(),
+  ],
+})
+```
+
+![use.png](/blog/images/plugins/devtools/use.png)
+
+启动项目，默认右下角有个图标，点击可以查看功能。
+
+## 功能
+
+### 概况
+
+概况显示vue当前的版本，页面路线，以及组件详情。点击模块可以查看相应的内容。
+
+![image.png](/blog/images/plugins/devtools/overview.png)
+
+### 页面路线
+
+通过页面路线可以查看所有的路由信息，`active`标识当前路由，也可以点击路由链接跳转相应的页面。
+
+也可以在`Current route`输入路由路径点击回车跳转。
+
+![image.png](/blog/images/plugins/devtools/pages.png)
+
+### 组件
+
+页面组件，显示当前页面的所有组件信息，展示组件的所有信息，`props`,`attrs`,`provided`,`event`等一些信息
+
+![image.png](/blog/images/plugins/devtools/components.png)
+
+如果组件中有`emits`事件，或者`defineExpose`向外暴露的属性和事件，我们都可以清晰可见，再使用组件的事件和属性的时候，不用去看代码再找组件的是否有哪个属性或者事件头疼了，体验好了很多，也方便许多。
+
+![image.png](/blog/images/plugins/devtools/emits.png)
+
+### assests 静态资源
+
+点击assets可以查看静态资源，图片和字体等等。点击可以查看相对应的路径。我们使用的时候不用再纠结图片路径，他贴心的加了一个复制按钮，让你直接点下复制，就可以获取路径，解放了双手的同时也给你带来了更多的便利。粘贴就可以直接使用了。也添加了下载功能，如果你想要下载，点击也是可以，当然也要看你的工作需求了。
+
+![image.png](/blog/images/plugins/devtools/assets.png)
+
+### Timeline 时间轴
+
+时间轴：是我们点击路由或者pinia等等的操作的记录。
+
+router：可以看到路由的开始跳转以及结束跳转的信息，包括跳转路由的参数什么都是清晰可以看到，不用在路由拦截中打印调试就能看到。实在太实用了。
+
+![image.png](/blog/images/plugins/devtools/timeline.png)
+
+pinia：显示的更方便了，你操作了什么，设置了什么，那个命名中的设置都是可以看到，这个更加方便了。在数据调试中很是方便，可以动态的查看数据的变化和操作流程。不用再为有没有设置到这个参数而纠结了。
+
+![image.png](/blog/images/plugins/devtools/timeline-pinia.png)
+
+### Routes 路由路线
+
+这个功能就更加方便了，你设置的所有路由一目了然。功能看到你的`redirect`重定向路由的信息。
+
+名字和路径点击就自动复制，我们在路由操作中很是实用，不用反复切换路由，抓耳挠腮的查看路由信息。
+
+![image.png](/blog/images/plugins/devtools/routes.png)
+
+### Pinia
+
+这个就不用多说了，显示store中`state`和`getters`, 和浏览器插件差不多，同样也有贴心的复制功能。
+
+![image.png](/blog/images/plugins/devtools/pinia.png)
+
+### Inspector 检查工具
+
+你有一个页面多个组件吗？有个问题或者文案要修改，你又突然找不到哪个组件的烦恼吗？
+
+这个功能要着重说下，这个功能更是实用的不行。  
+如果我们页面中有多个组件，有个问题要调试，我们可能一下定位不到哪个组件里面的内容，这个功能很好的解决了这个问题。
+
+我们先看下，
+
+先点下`Inspector`  
+例如我们有个`card`组件，把鼠标放到组件中的地址位置，**会显示哪个组件，在这个组件多少行的位置**
+
+点击鼠标左键，在看你的编辑器，直接跳转你选择内容组件，更强大的是直接跳到你的调试内容行数位置，精准定位📌。这个功能太强大了，你还有不用他的理由吗？
+
+![image.png](/blog/images/plugins/devtools/inspector.png)
+![image.png](/blog/images/plugins/devtools/inspector2.png)
+
+### Graph 图表
+
+图表视图，显示组件之间的关系。没有想到有什么用的到地方😓
+
+![image.png](/blog/images/plugins/devtools/graph.png)
+
+### Inspect 检查
+
+Inspect暴露[`vite-plugin-inspect`](https://github.com/antfu/vite-plugin-inspect)集成，可以查看代码如何转换以及你的代码存在的问题。
+
+![image.png](/blog/images/plugins/devtools/inspect.png)
+
+### Documentations 文档
+
+这个也是比较实用的，他根据你的依赖，展示你的依赖包文档，如果有什么不熟悉的，或者查看文档的一点触达，很是贴心。
+
+![image.png](/blog/images/plugins/devtools/documentations.png)
+
+### 设置
+
+可以根据自己的喜好，设置主题颜色，字体大小，显示位置，以及侧边栏显示信息，这个就自己摸索了。
+
+![image.png](/blog/images/plugins/devtools/settings.png)
+
+### 结论
+
+优点：
+
+功能比较实用，开发体验方便，结构清晰，一目了然。仅在开发模式下可用，打包不用考虑删除问题
+
+缺点：
+
+也不断是缺点吧，就是显示的内容页面不能拖拽，如果能添加一个独立的弹框显示更好了。
+
+**注意：**
+
+- 仅在开发模式下可用
+- 仅支持Vue3.0+
+- vite尽量4.0版本，其他的版本可能会出现报错情况

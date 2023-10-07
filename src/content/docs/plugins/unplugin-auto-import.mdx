@@ -1,0 +1,243 @@
+---
+title: 自动引入插件
+---
+:::tip
+`unplugin-auto-import/vite`一款超级好用自动引入插件
+:::
+
+我们先看下效果：
+
+```js
+// count.vue
+<script setup>
+const route = useRoute();
+const count = ref(0)
+const doubled = computed(() => count.value * 2)
+
+watch(doubled, (val) => {
+  console.log('New value: ' + val)
+})
+</script>
+
+```
+
+不用引入就可以使用vue的API，如果你敢兴趣，也想这样用，就跟着我一起实现吧。
+
+## 项目背景
+
+我们先来看一段我们经常写的一段代码
+
+```js
+// count.vue
+<script setup>
+import { ref, computed, watch } from 'vue'
+
+const count = ref(0)
+
+const doubled = computed(() => count.value * 2)
+
+watch(doubled, (val) => {
+  console.log('New value: ' + val)
+})
+</script>
+
+```
+
+```js
+// serach.vue
+<script setup>
+import { ref } from 'vue';
+
+const search = ref('');
+const seachHandle = (val) => {
+  search.value = 'new value'
+};
+</script>
+```
+
+有没有发现每一次我们使用`vue`的API，我们都用首先引入相应的API，为了方便我们可以写一个公用的API，这样写：
+
+```js
+// useCommon.js
+import {
+  ref, reactive, computed, watch, onMounted, nextTick, onUnmounted,
+} from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { storeToRefs } from 'pinia';
+
+export function useCommon() {
+  const route = useRoute();
+  const router = useRouter();
+
+  const routerName = computed(() => route.name);
+
+  return {
+    route, router, nextTick, ref, reactive, computed, watch, onMounted, onUnmounted, routerName, storeToRefs,
+  };
+}
+
+```
+
+使用的时候可以这样引入
+
+```js
+<script setup>
+  import { useCommon } from '@common/core';
+  const { store, route, router, ref, nextTick, routerName } = useCommon();
+  const search = ref('')
+</script>
+```
+
+这样是简单了一点，但是还是要每次都引入，很不方便，我一直在考虑，有没有一种可以不用引入，直接用的方法。下面就让我们看下怎么玩吧。
+
+## 安装
+
+```js
+npm i unplugin-auto-import -D
+// or
+yarn add unplugin-auto-import -D
+```
+
+## 使用
+
+`vite.config.js`文件中引入
+
+```js
+// vite.config.ts
+import AutoImport from 'unplugin-auto-import/vite'
+
+export default defineConfig({
+  plugins: [
+    AutoImport({ /* options */ }),
+  ],
+})
+
+```
+
+## 配置
+
+### 使用vue, vue-router
+
+```js
+// vite.config.ts
+import AutoImport from 'unplugin-auto-import/vite'
+
+export default defineConfig({
+  plugins: [
+    AutoImport({
+        imports: [
+          'vue', 'vue-router',
+        ],
+      }),
+  ],
+})
+
+```
+
+使用前：
+
+```js
+// count.vue
+<script setup>
+import { ref, computed, watch } from 'vue'
+
+const count = ref(0)
+
+const doubled = computed(() => count.value * 2)
+
+watch(doubled, (val) => {
+  console.log('New value: ' + val)
+})
+</script>
+
+```
+
+使用看下效果
+
+```js
+// count.vue
+<script setup>
+const route = useRoute();
+const count = ref(0)
+const doubled = computed(() => count.value * 2)
+
+watch(doubled, (val) => {
+  console.log('New value: ' + val)
+})
+</script>
+
+```
+
+如果可以运行项目，恭喜你已经成功了，可以愉快的使用了。是不是看着清爽了很多。😄
+
+### 自定义配置
+
+我们有时候为了方便，引入其他的工具包，我们以[@vueuse/core](https://vueuse.org/guide/index.html)为例
+
+```js
+// vite.config.ts
+import AutoImport from 'unplugin-auto-import/vite'
+
+export default defineConfig({
+  plugins: [
+    AutoImport({
+        imports: [
+          'vue', 'vue-router',
+          {
+            '@vueuse/core': [
+              'useMouse', 
+            ],
+          },
+        ],
+      }),
+  ],
+})
+
+```
+
+可以直接使用
+
+```js
+<script setup>
+const { x, y } = useMouse()
+console.log(x.value)
+
+const mouse = useMouse()
+
+console.log(mouse.x.value)
+</script>
+```
+
+### 其他
+
+1. eslint报错问题，我的解决办法：
+
+```js
+AutoImport({
+  // ....
+  
+  dts: './auto-import.d.ts',
+  eslintrc: {
+    enabled: true, //设置为ture
+    filepath: './.eslintrc-auto-import.json',
+    globalsPropValue: true,
+  },
+
+})
+```
+
+.eslintrc.js添加配置：
+
+```js
+module.exports = {
+  extends: [
+    './.eslintrc-auto-import.json',
+  ],
+}
+```
+
+重新跑下项目就可以了，如果文件根目录出现`.eslintrc-auto-import.json`，就可以愉快的使用了。
+
+![image.png](/blog/images/plugins/vite-auto-import.png)
+
+其他的参数在总结，，如果你们有其他的想法，请指出，我们一起讨论。共同进步。

@@ -7,7 +7,8 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "postinstall": "cd node_modules/@kvuse/commitlint-config && npm run preinstall"
   },
   "dependencies": {
     "@astrojs/starlight": "^0.10.2",
@@ -16,6 +17,8 @@
     "sharp": "^0.32.5"
   },
   "devDependencies": {
+    "@commitlint/cli": "^17.7.2",
+    "@kvuse/commitlint-config": "^1.2.1",
     "@kvuse/eslint-config": "^1.0.4",
     "@kvuse/stylelint-config": "^1.0.2",
     "@typescript-eslint/parser": "^6.7.3",
