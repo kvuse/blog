@@ -9,7 +9,7 @@ export default defineConfig({
   integrations: [
     starlight({
       title: '学而习之',
-      favicon: './src/assets/logo.svg',
+      favicon: '/images/favicon.svg',
       lastUpdated: true,
       logo: {
         src: './src/assets/logo.svg',
