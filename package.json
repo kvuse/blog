@@ -7,8 +7,7 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro",
-    "postinstall": "cd node_modules/@kvuse/commitlint-config && npm run preinstall"
+    "astro": "astro"
   },
   "dependencies": {
     "@astrojs/starlight": "^0.10.2",
