@@ -27,6 +27,14 @@ body {
   code {
     font-size: var(--sl-font-size-base);
   }
+
+  .tab {
+    list-style-type: none;
+  }
+
+  ol {
+    margin-left: 1.8rem;
+  }
 }
 
 [data-theme="dark"] {

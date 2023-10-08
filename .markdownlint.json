@@ -1,9 +1,9 @@
 {
   "default": true,
-  "MD007": { "indent": 4 },
+  "MD007": { "indent": 2 },
   "no-hard-tabs": false,
   "MD033": {
-    "allowed_elements": ["demo", "v-table", "div", "CardGrid", "Card"]
+    "allowed_elements": ["CodeGroup", "v-table", "div", "Tabs", "TabItem"]
   },
   "MD024": false,
   "MD013": false,

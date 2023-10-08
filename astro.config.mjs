@@ -24,6 +24,7 @@ export default defineConfig({
         { label: '框架', autogenerate: { directory: 'framework' } },
         { label: '插件', autogenerate: { directory: 'plugins' } },
         { label: '组件', autogenerate: { directory: 'components' } },
+        { label: '其他', autogenerate: { directory: 'others' } },
       ],
     }),
   ],

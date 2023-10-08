@@ -1,0 +1,185 @@
+---
+title: Lightning CSS
+date: 2023-10-08
+sidebar:
+    badge:
+        text: 尝鲜
+        variant: caution
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+vite项目使用Lightning CSS
+
+## 介绍
+
+:::tip[快速]
+一个非常快速的CSS解析器，Transformer，捆绑器和minifier。
+:::
+
+## 安装
+
+<Tabs>
+<TabItem label="npm">
+
+```sh
+# 使用 npm 下载
+npm install lightningcss
+```
+
+</TabItem>
+<TabItem label="pnpm">
+```sh
+# 使用 pnpm 下载
+pnpm install lightningcss
+```
+</TabItem>
+<TabItem label="Yarn">
+```sh
+# 使用 yarn 下载
+yarn add lightningcss
+```
+</TabItem>
+</Tabs>
+
+## 配置
+
+1. 在 `packages.json` 文件中添加`browserslist`或者下载[`browserslist`](https://browsersl.ist/#q=defaults+and+supports+es6-module)
+
+    ```json
+    "browserslist": [
+        "defaults and supports es6-module"
+    ]
+    ```
+
+2. 在 `vite.config.js` 文件中添加以下配置：
+
+    ```js
+    import { defineConfig } from 'vite';
+    import { browserslistToTargets } from 'lightningcss';
+    import { browserslist } from './package.json';
+
+    export default defineConfig({
+        css: {
+            transformer: 'lightningcss',
+            lightningcss: {
+                targets: browserslistToTargets(browserslist),
+            },
+        },
+        build: {
+            cssMinify: 'lightningcss',
+        },
+    });
+    ```
+
+## 打包测试
+
+看下对比测试包大小
+
+![build.png](/blog/images/lightningcss/build.png)
+
+测试包比较小，效果不是太明显
+
+## 编译效果
+
+### 添加前缀
+
+```css
+.logo {
+  background: image-set(url(logo.png) 2x, url(logo.png) 1x);
+}
+/* 编译后： */
+.logo {
+  background: -webkit-image-set(url(logo.png) 2x, url(logo.png) 1x);
+  background: image-set("logo.png" 2x, "logo.png");
+}
+```
+
+此外，如果您的CSS源代码（或更可能是库）包含不必要的供应商前缀，Lightning CSS将自动删除它们以减少捆绑包大小。例如，在为现代浏览器进行编译时，会删除带前缀的transition属性版本，因为所有浏览器都支持无前缀版本。
+
+```css
+.button {
+  -webkit-transition: background 200ms;
+  -moz-transition: background 200ms;
+  transition: background 200ms;
+}
+/* 编译后： */
+
+.button {
+  transition: background .2s;
+}
+```
+
+### 语法降低
+
+Lightning CSS自动编译许多现代CSS语法功能，以获得目标浏览器支持的更兼容的输出。
+
+```css
+.foo {
+  color: blue;
+
+  .bar {
+    color: red;
+  }
+}
+/* 相当于： */
+
+.foo {
+  color: blue;
+}
+
+.foo .bar {
+  color: red;
+}
+```
+
+### 媒体查询
+
+允许使用比较运算符来创建范围和间隔来定义媒体查询。Lightning CSS在需要时将其编译为相应的min和max媒体功能。
+
+```css
+@media (480px <= width <= 768px) {
+  .foo { color: red }
+}
+/* 编译为： */
+
+@media (min-width: 480px) and (max-width: 768px) {
+  .foo { color: red }
+}
+```
+
+更多详情[查看](https://lightningcss.dev/transpilation.html)
+
+## 问题
+
+1. lightningcss 是严格模式，不允许存在注释，否则打包会出现报错
+
+   ```scss
+   .wrapper {
+    border: 1px solid gold;
+    display: grid;
+    grid-template-columns: 1fr min(600px, calc(100% - 64px)) 1fr;
+    grid-column-gap: 32px;
+    }
+
+    // .wrapper > * {
+    //   grid-column: 2;
+    // }
+
+    // .main {
+    //   grid-column: 1 / 4;
+    // }
+   ```
+
+   会出现以下报错，去掉注释就可以了
+
+   ```js
+   transforming (705) ✓ built in 4.43s
+    [vite:css] Invalid empty selector
+    file: HolyGrailLayout.vue?vue&type=style&index=0&scoped=23fdc391&lang.scss:9:1
+    error during build:
+    SyntaxError: Invalid empty selector
+     ELIFECYCLE  Command failed with exit code 1.
+   ```
+
+2. 其他问题正在摸索中
