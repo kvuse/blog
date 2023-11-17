@@ -1,0 +1,46 @@
+---
+title: "vue: 从子组件暴露插槽"
+---
+## 资料
+
+### $attrs
+
+一个包含了组件所有透传 attributes 的对象。
+
+> 透传 Attributes 是指由父组件传入，且没有被子组件声明为 props 或是组件自定义事件的 attributes 和事件处理函数。  
+>默认情况下，若是单一根节点组件，$attrs 中的所有属性都是直接自动继承自组件的根元素。而多根节点组件则不会如此，同时你也可以通过配置 inheritAttrs 选项来显式地关闭该行为。
+
+### $slots
+
+一个表示父组件所传入插槽的对象。
+> 每一个插槽都在 this.$slots 上暴露为一个函数，返回一个 vnode 数组，同时 key 名对应着插槽名。默认插槽暴露为 this.$slots.default。  
+  如果插槽是一个作用域插槽，传递给该插槽函数的参数可以作为插槽的 prop 提供给插槽。
+
+## 实践
+
+第三方组件通常包装在自定义组件中。但这样一来，第三方组件的插槽就会丢失。
+
+以下解决方案将第三方组件的所有插槽公开给父组件：
+
+WrapperComponent.vue
+
+```html
+<template>
+  <div class="wrapper">
+    <ThirdComponent v-bind="$attrs">
+      <!-- Expose all slots of the third component -->
+      <template v-for="(_, name) in $slots" #[name]="slotProps">
+        <slot :name="name" v-bind="slotProps || {}"></slot>
+      </template>
+    </ThirdComponent>
+  </div>
+</template>
+```
+
+现在，每个使用`WrapperComponent`的组件都可以使用`ThirdComponent`的插槽。
+
+发生了什么：
+
+1. 插入第三方组件，通过`$attrs`组件实例对象绑定属性（[官方文档](https://vuejs.org/api/component-instance.html#attrs)）
+2. 我们使用`$slots`组件实例对象（[官方文档](https://vuejs.org/api/component-instance.html#slots)）遍历所有可用的插槽，并通过`#[name]="slotProps"`将插槽props绑定到插槽名称
+3. 在`slot`中，我们使用`v-bind`绑定所有第三方插槽属性（`slotProps`）以传递给父插槽

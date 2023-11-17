@@ -1,0 +1,105 @@
+---
+title: "无渲染组件"
+---
+
+## 什么是无渲染组件
+
+:::note[笔记]
+无渲染组件是Vue中的一种模式，它将组件的逻辑与其表示分离。该模式提供了一种方法， 封装功能而不指定组件的可视表示。换句话说，一个无渲染组件 只依赖于逻辑和行为，而将渲染留给父组件。
+
+当我们需要创建可应用于不同UI实现的可重用逻辑时，无呈现组件特别有用。通过 通过将逻辑抽象为一个无渲染组件，我们可以很容易地在各种上下文中重用它，而无需重复代码。如果你还在困惑 在这个时候，不要担心！让我们通过一个例子来深入了解这个概念。
+:::
+
+## 常规组件
+
+先看一下一个常规的组件：
+
+```vue
+  <template>
+    <div class="comp">
+      <label class="switch">
+        <input type="checkbox" :value="checkbox" @click="toggleCheckbox" />
+        <div class="slider rounded" :class="checkbox ? 'active' : ''"></div>
+      </label>
+    </div>
+  </template>
+
+  <script setup>
+    const checkbox = ref(false);
+
+    const toggleCheckbox = () => {
+      checkbox.value = !checkbox.value;
+    };
+  </script>   
+```
+
+上面的例子已经满足我们的需求，但是Vue为我们提供了另一种模式，让我们可以在保持解耦的同时重用有状态逻辑渲染。
+
+## 无渲染组件
+
+> 无渲染组件背后的主要思想是创建一个组件，该组件本身不呈现任何HTML和UI元素，但公开其内部状态和方法添加到其父组件，然后父组件只负责呈现UI,没有渲染组件的行为。
+
+简单说就是:  组件不渲染任何内容，只负责逻辑和行为
+
+我们通过`slot插槽`，允许父组件将模板内容注入到子组件中, 可以让父组件指定应该呈现的内容。
+
+```vue
+<!-- /components/childComponent -->
+<template>
+  <slot :checkbox="checkbox" :toggleCheckbox="toggleCheckbox"></slot>
+</template>
+
+<script setup>
+  import { ref } from "vue";
+
+  const checkbox = ref(false);
+
+  const toggleCheckbox = () => {
+    checkbox.value = !checkbox.value;
+  };
+</script>
+```
+
+父组件中使用:
+
+```vue
+<template>
+  <childComponent v-slot="{ checkbox, toggleCheckbox }">
+    <div class="comp">
+      <label class="switch">
+        <input type="checkbox" :value="checkbox" @click="toggleCheckbox" />
+        <div class="slider rounded" :class="checkbox ? 'active' : ''"></div>
+      </label>
+    </div>
+  </childComponent>
+</template>
+
+<script setup>
+  import childComponent from "./components/childComponent";
+</script>
+```
+
+如果我们添加一个按钮控制，我们可以直接调用`toggleCheckbox`方法，控制切换。不用考虑渲染行为。
+
+```vue
+<template>
+  <ChildComponent v-slot="{ checkbox, toggleCheckbox }">
+    <button @click="toggleCheckbox">
+      <span>切换</span>
+      <span>{{ checkbox ? '开' : '关' }}</span>
+    </button>
+  </ChildComponent>
+</template>
+
+<script setup>
+  import childComponent from "./components/childComponent";
+</script>
+```
+
+看到这里，应该就理解无渲染组件的用途了吧，就是子组件只负责逻辑和行为，渲染交给父组件。
+
+## 总结
+
+无渲染组件侧重于分离组件的逻辑，更好做到逻辑和渲染分离。
+
+也可使用可组合组件和组合式函数，达到同样的目的，更加需求自主选择。
