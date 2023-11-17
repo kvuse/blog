@@ -17,7 +17,7 @@ export default defineConfig({
       },
       customCss: ['./src/styles/global.scss'],
       social: {
-        github: 'https://github.com/kvuse/docs',
+        github: 'https://github.com/kvuse/blog',
       },
       sidebar: [
         { label: '开始', link: '/guides' },
