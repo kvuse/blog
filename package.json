@@ -1,5 +1,5 @@
 {
-  "name": "cyan-cycle",
+  "name": "blog",
   "type": "module",
   "version": "0.0.1",
   "scripts": {
@@ -10,18 +10,18 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/starlight": "^0.11.0",
-    "astro": "^3.3.0",
-    "kucss": "^1.1.3",
-    "sharp": "^0.32.6"
+    "@astrojs/starlight": "^0.15.0",
+    "astro": "^4.0.3",
+    "kucss": "^1.1.5",
+    "sharp": "^0.33.0"
   },
   "devDependencies": {
     "@kvuse/commitlint-config": "^1.2.2",
-    "@kvuse/eslint-config": "^1.0.4",
+    "@kvuse/eslint-config": "^1.0.5",
     "@kvuse/stylelint-config": "^1.0.2",
-    "@typescript-eslint/parser": "^6.7.5",
-    "eslint-plugin-astro": "^0.29.1",
-    "prettier-plugin-astro": "^0.12.0",
-    "stylelint": "^15.10.3"
+    "@typescript-eslint/parser": "^6.13.2",
+    "eslint-plugin-astro": "^0.30.0",
+    "prettier-plugin-astro": "^0.12.2",
+    "stylelint": "^16.0.1"
   }
 }
