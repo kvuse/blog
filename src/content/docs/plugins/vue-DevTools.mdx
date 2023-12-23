@@ -158,3 +158,23 @@ Inspect暴露[`vite-plugin-inspect`](https://github.com/antfu/vite-plugin-inspec
 - 仅在开发模式下可用
 - 仅支持Vue3.0+
 - vite尽量4.0版本，其他的版本可能会出现报错情况
+
+## 问题
+
+1. 如果在跳转组件时，发现跳转的编辑器组件
+
+### 解决方案
+
+检查是`vite.config.js`否设置了`base`
+如果设置了，解决方法如下：
+
+```js
+// 方法 1
+plugin: [
+  VueDevTools({
+    openInEditorHost: `http://localhost:8080/${your-base-path}`,
+  }),
+],
+// 方法 2
+base: process.env.NODE_ENV === 'development' ? '/' : '/your-base-path/',
+```
