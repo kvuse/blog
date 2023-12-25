@@ -1,0 +1,63 @@
+---
+title: "自动引入组件"
+---
+
+## 安装
+
+```bash
+npm i unplugin-vue-components -D
+```
+
+## 配置
+
+```js
+// vite.config.js
+import Components from 'unplugin-vue-components/vite'
+
+export default defineConfig({
+  plugins: [
+    Components({ /* options */ }),
+  ],
+})
+
+```
+
+## 测试
+
+```diff lang="vue"
+<script setup lang="ts">
+- import HelloWorld from '@/components/HelloWorld.vue' 
+
+// other script logic...
+</script>
+
+<template>
+  <div>
+    <HelloWorld msg="Hello Vue 3.0 + Vite" />
+  </div>
+</template>
+
+```
+
+## 常用参数
+
+```js
+// 默认值
+Components({
+  dirs: ['src/components'], // 搜索的文件夹
+
+  extensions: ['vue'], // 文件扩展名
+
+  // 匹配文件名的Glob模式将被检测为组件。
+  //如果指定，`dirs`和`extensions`选项将被忽略。
+  globs: ['src/components/*.{vue}'],
+
+  deep: true, // 搜索子目录
+
+  dts: false, // ts 生成components.d.ts 默认为 true
+
+  // 过滤目标文件
+  include: [/\.vue$/, /\.vue\?vue/],
+  exclude: [/[\\/]node_modules[\\/]/, /[\\/]\.git[\\/]/, /[\\/]\.nuxt[\\/]/],
+})
+```
