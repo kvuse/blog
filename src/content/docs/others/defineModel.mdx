@@ -1,0 +1,121 @@
+---
+title: "defineModel"
+---
+
+:::danger[提示]
+`defineModel` 是vue 3.4 新增的宏，如果使用请先升级版本到`3.4+`     [【官方文档】](https://cn.vuejs.org/api/sfc-script-setup.html#definemodel)
+:::
+
+## 介绍
+
+这个宏可以用来声明一个双向绑定 prop，通过父组件的 v-model 来使用。
+
+## 用法
+
+在底层，这个宏声明了一个 model prop 和一个相应的值更新事件。如果第一个参数是一个字符串字面量，它将被用作 prop 名称；否则，prop 名称将默认为 "modelValue"
+
+```js
+// 声明 "modelValue" prop，由父组件通过 v-model 使用
+const model = defineModel()
+// 或者：声明带选项的 "modelValue" prop
+const model = defineModel({ type: String })
+
+// 在被修改时，触发 "update:modelValue" 事件
+model.value = "hello"
+
+// 声明 "count" prop，由父组件通过 v-model:count 使用
+const count = defineModel("count")
+// 或者：声明带选项的 "count" prop
+const count = defineModel("count", { type: Number, default: 0 })
+
+function inc() {
+  // 在被修改时，触发 "update:count" 事件
+  count.value++
+}
+```
+
+## 使用
+
+### 使用前 props 和 emits
+
+没有defineModel之前，我们定义一个双向绑定的组件是这样的：
+
+```vue
+<!-- children.vue -->
+<template>
+  <div label="children.vue">
+    <input v-model="name"/>
+  </div>
+</template>
+
+<script setup>
+const props = defineProps({
+  modelValue: { type: String, default: ''}
+})
+
+const emits = defineEmits['update:modelValue']
+
+const name = computed({
+  get() {
+    return props.modelValue
+  },
+  set(val) {
+    emits('update:modelValue', val)
+  }
+})
+</script>
+```
+
+```vue
+<!-- parent.vue -->
+<template>
+  <div label="parent.vue">
+    <children v-model="value"/>
+  </div>
+</template>
+
+<script setup>
+import children from './children.vue'
+
+const value = ref('')
+</script>
+```
+
+### 使用后 defineModel
+
+使用defineModel之后，我们定义一个双向绑定的组件是这样的：
+
+```vue
+<!-- children.vue -->
+<template>
+  <div label="children.vue">
+    <input v-model="name"/>
+  </div>
+</template>
+
+<script setup>
+// 一行代码搞定
+const name = defineModel(modelValue: { type: String, default: ''})
+</script>
+```
+
+```vue
+<!-- parent.vue -->
+<template>
+  <div label="parent.vue">
+    <children v-model="value"/>
+  </div>
+</template>
+
+<script setup>
+import children from './children.vue'
+
+const value = ref('')
+</script>
+```
+
+## 总结
+
+`defineModel`是一个语法糖，它简化了双向绑定的实现过程。通过使用`defineModel`，我们可以更方便地定义和处理双向绑定的逻辑。
+
+需要注意的是，`defineModel`只能在`<script setup>`中使用。
