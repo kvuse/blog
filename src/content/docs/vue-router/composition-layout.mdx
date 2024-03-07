@@ -1,0 +1,191 @@
+---
+title: "vueRouter组合布局"
+---
+
+今天我们用一种新的布局方式，使用路由视图来实现布局样式。
+
+## 常用的布局
+
+我们首先看一个我们常用的布局，左右布局。
+
+![image.png](/blog/images/vueRouter/layout/left-right.png)
+
+### app 页面
+
+我们通常写一个这样的布局，思路是这样的：
+
+1. 我们首先要写三个组件`meun.vue`, `header.vue`, `collect.vue`
+2. 在app添加引入单个组件  
+
+   ```vue
+    # app.vue
+    <template>
+      <div class="contain flex p10 mt40 ml40">
+        <Menu class="menu width-200 flex-center mr10" />
+        <div class="flex1 flex-column">
+          <Header class="header mb10 p10 flex-center"></Header>
+          <router-view class="view-main"></router-view>
+        </div>
+      </div>
+    </template>
+
+    <script setup>
+    import Header from './views/home/header.vue';
+    import Menu from './views/home/menu.vue';
+    </script>
+   ```
+
+### about 页面
+
+如果我们的`about`页面，像这样的，没有`menu`或者`header`
+
+![image.png](/blog/images/vueRouter/layout/about.png)
+
+我们可以根据路由判断是否显示`menu`或者`header`组件
+
+```vue
+<template>
+  <div class="contain flex p10 mt40 ml40">
+    <Menu class="menu width-200 flex-center mr10" v-if="route.name !== 'about'" />
+    <div class="flex1 flex-column">
+      <Header class="header mb10 p10 flex-center"></Header>
+      <router-view class="view-main"></router-view>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { useRoute } from 'vue-router';
+import Header from './views/home/header.vue';
+import Menu from './views/home/menu.vue';
+
+const route = useRoute();
+</script>
+```
+
+### 思考🤔
+
+这是我们的常规操作，如果我们有些页面不需要`menu`或者`header`页面，我们都是要引入的，还有判断是否显示隐藏。
+
+怎么才能不写这么多判断，又能提高性能的同时，还能实现我们的效果呢？
+
+- 使用异步组件动态导入 [`defineAsyncComponent`](https://cn.vuejs.org/guide/components/async.html#basic-usage), 有需要组件去官网看下
+- 使用 [`vue router命名视图`](https://router.vuejs.org/zh/guide/essentials/named-views.html)
+
+### 命名视图
+
+我们这里使用命令视图, 来实现我们想要的效果
+
+> 有时候想同时 (同级) 展示多个视图，而不是嵌套展示，例如创建一个布局，有 `sidebar` (侧导航) 和 `main` (主内容) 两个视图，这个时候命名视图就派上用场了。你可以在界面中拥有多个单独命名的视图，而不是只有一个单独的出口。如果 `router-view` 没有设置名字，那么默认为 `default`。
+
+```html
+<router-view class="view left-sidebar" name="LeftSidebar"></router-view>
+<router-view class="view main-content"></router-view>
+<router-view class="view right-sidebar" name="RightSidebar"></router-view>
+```
+
+## Router组合布局
+
+项目目录结构
+
+```md
+router-demo
+├── src
+│   ├── App.vue
+│   ├── assets
+│   │   └── vue.svg
+│   ├── main.js
+│   ├── router
+│   │   └── index.js
+│   ├── store
+│   │   └── index.js
+│   ├── utils
+│   │   └── request.js
+│   └── views
+│       ├── about
+│       │   ├── api
+│       │   │   └── index.js
+│       │   ├── index.vue
+│       │   ├── router
+│       │   │   └── index.js
+│       │   └── store
+│       │       └── index.js
+│       ├── home
+│       │   ├── header.vue
+│       │   └── menu.vue
+│       └── main
+│           ├── api
+│           │   └── index.js
+│           ├── index.vue
+│           ├── router
+│           │   └── index.js
+│           └── store
+│               └── index.js
+└── vite.config.js
+```
+
+1. 修改`app.vue`视图显示
+  **注意看下📢：添加了两个`router-view`命名视图**
+
+   ```vue
+   <template>
+      <div class="contain flex p10 mt40 ml40">
+        <router-view class="menu width-200 flex-center mr10" name="Menu" />
+        <div class="flex1 flex-column">
+          <router-view class="header mb10 p10 flex-center" name="Headers" />
+          <router-view class="view-main"></router-view>
+        </div>
+      </div>
+    </template>
+
+    <script setup>
+
+    </script>
+   ```
+
+2. 修改`main`文件夹中的route.js
+
+   这里 **注意📢：`component`修改`components`**
+
+   ```js
+   // mian/router/index.js
+   export default [
+      {
+        path: '/main',
+        name: 'main',
+        components: {
+          default: () => import('../index.vue'),
+          Headers: () => import('@/views/home/header.vue'),
+          Menu: () => import('@/views/home/menu.vue'),
+        },
+      },
+    ];
+   ```
+
+![image.png](/blog/images/vueRouter/layout/main.png)
+3. 修改`about`文件夹的router.js
+
+   ```js
+   // about/router/index.js
+   export default [
+      {
+        path: '/about',
+        name: 'about',
+        components: {
+          default: () => import('../index.vue'),
+          Headers: () => import('@/views/home/header.vue'),
+        },
+      },
+    ];
+   ```
+
+![image.png](/blog/images/vueRouter/layout/layout-about.png)
+
+如果想显示哪个视图，就在相对应的路由`components`添加相应的视图组件，这样是不是方便了许多。
+
+## 结论
+
+- 不用在`app.vue`添加判断是否显示隐藏`header`和`menu`组件
+- 根据路由动态显示布局样式
+
+这只是提示多一种新的布局方式，方便我们开发，当然还是选择合适自己的写法。

@@ -10,8 +10,8 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/starlight": "^0.19.1",
-    "astro": "^4.4.1",
+    "@astrojs/starlight": "^0.21.1",
+    "astro": "^4.4.13",
     "kucss": "^1.1.5",
     "sharp": "^0.33.2"
   },
@@ -19,7 +19,7 @@
     "@kvuse/commitlint-config": "^1.2.2",
     "@kvuse/eslint-config": "^1.0.5",
     "@kvuse/stylelint-config": "^1.0.2",
-    "@typescript-eslint/parser": "^7.0.2",
+    "@typescript-eslint/parser": "^7.1.1",
     "eslint-plugin-astro": "^0.31.4",
     "prettier-plugin-astro": "^0.13.0",
     "stylelint": "^16.2.1"
