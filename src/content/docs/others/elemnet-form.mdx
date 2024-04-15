@@ -1,0 +1,50 @@
+---
+title: "ElementPlus 表单验证问题"
+---
+## 问题
+
+自定义组件在elementplus中使用，需要验证表单，但是验证表单的规则是自定义的，无法使用elementplus的表单验证。
+
+## 解决方案
+
+使用`useFormItem`钩子函数，在自定义组件中调用`validate`方法来触发表单验证。
+
+```js
+import { useFormItem } from 'element-plus';
+
+/**
+ * 触发表单验证
+ * @returns function
+ */
+export function useElementTrigger() {
+  const { formItem } = useFormItem();
+
+  const trigger = () => {
+    formItem?.validate('change').catch(() => {});
+    formItem?.validate('blur').catch(() => {});
+  };
+
+  return { trigger };
+}
+```
+
+## 示例
+
+```vue
+<template>
+  <el-form :model="form">
+    <el-form-item label="自定义组件" prop="custom">
+      <el-input v-model="form.custom" @change="trigger" />
+    </el-form-item>
+  </el-form>
+</template>
+
+<script setup>
+const { trigger } = useElementTrigger();
+
+const form = defineModel({ type: Object, default: ()=> ({}) })
+
+</script>
+```
+
+父组件表单中绑定就会触发验证事件。

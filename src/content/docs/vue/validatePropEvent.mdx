@@ -1,0 +1,68 @@
+---
+title: 验证props和事件类型
+---
+
+## props类型
+
+组件封装过程中，我们会传入这个参数，方便组件扩展，但是有的props是指定类型，不能用户自定义，所以这个时候我们就要验证props的类型，如果类型不匹配，就抛出警告。
+
+```js
+<script setup>
+defineProps({
+  // 验证类型
+  propA: Number,
+  // 验证类型 + 默认值
+  propB: {
+    type: String,
+    default: 'default value'
+  },
+  // 验证类型 + 默认值 + 必填
+  propC: {
+    type: Number,
+    default: 0,
+    required: true
+  },
+  // 验证类型 + 默认值 + 必填 + 验证函数
+  propD: {
+    type: Number,
+    default: 0,
+    required: true,
+    validator: function (value) {
+      return value > 10
+    }
+  },
+  type: {
+    type: String,
+    default: 'sucess',
+    required: true,
+    validator: function (value) {
+      return ['success', 'warning', 'danger'].includes(value)
+    }
+  }
+})
+</script>
+```
+
+## 事件类型
+
+调用事件时，有时候我们也要必传参数，所以我们也需要验证事件参数的类型，防止使用过程中报错。
+
+```js
+<script setup>
+const emit = defineEmits({
+click: null,
+upDate: (payload) => {
+  // 验证参数类型
+  if (typeof payload !== 'number') {
+    console.error('payload must be a number')
+  }
+  // 验证参数必传
+  if (payload === undefined) {
+    console.error('payload is required')
+  }
+})
+```
+
+## 总结
+
+props和事件类型验证，可以防止使用过程中报错，提高代码健壮性。也要注意，验证类型不能太严格，不然会影响开发效率。
